@@ -1,0 +1,42 @@
+import sys, getopt
+import argparse
+import json
+try:
+    import gphoto2 as gp
+except ModuleNotFoundError:
+    print("There is no gphoto2 module installed")
+
+args = None
+
+def parse_args():
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('json_input', type=str, nargs=1,
+                    help='JSON formatted input of camera port, model and property to change')
+    args = parser.parse_args()
+
+def update_property():
+    try:
+        name = args.json_input["name"]
+        addr = args.json_input["port"]
+        camera = gp.Camera()
+        port_info_list = gp.PortInfoList()
+        port_info_list.load()
+        idx = port_info_list.lookup_path(addr)
+        camera.set_port_info(port_info_list[idx])
+        camera.init()
+        config = camera.get_config()
+        OK, prop = gp.gp_widget_get_child_by_name(config, args.json_input["property"])
+        if OK >= gp.GP_OK:
+            prop.set_value(args.json_input["value"])
+        return True
+    except:
+        return False
+    return False
+    
+
+if __name__ == "__main__":
+    parse_args()
+    status = update_property()
+    if not status:
+        exit(2)
