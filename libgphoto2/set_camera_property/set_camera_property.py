@@ -16,22 +16,22 @@ def parse_args():
     args = parser.parse_args()
 
 def update_property():
-    try:
-        name = args.json_input["name"]
-        addr = args.json_input["port"]
-        camera = gp.Camera()
-        port_info_list = gp.PortInfoList()
-        port_info_list.load()
-        idx = port_info_list.lookup_path(addr)
-        camera.set_port_info(port_info_list[idx])
-        camera.init()
-        config = camera.get_config()
-        OK, prop = gp.gp_widget_get_child_by_name(config, args.json_input["property"])
-        if OK >= gp.GP_OK:
-            prop.set_value(args.json_input["value"])
+    print(args.json_input[0])
+    json_val = json.loads(args.json_input[0])
+    name = json_val["name"]
+    addr = json_val["port"]
+    camera = gp.Camera()
+    port_info_list = gp.PortInfoList()
+    port_info_list.load()
+    idx = port_info_list.lookup_path(addr)
+    camera.set_port_info(port_info_list[idx])
+    camera.init()
+    config = camera.get_config()
+    OK, prop = gp.gp_widget_get_child_by_name(config, json_val["property"])
+    if OK >= gp.GP_OK:
+        prop.set_value(json_val["value"])
+        camera.set_config(config)
         return True
-    except:
-        return False
     return False
     
 
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     parse_args()
     status = update_property()
     if not status:
-        exit(2)
+        sys.exit(2)
