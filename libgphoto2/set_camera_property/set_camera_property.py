@@ -27,15 +27,16 @@ def update_property():
     camera.set_port_info(port_info_list[idx])
     camera.init()
     config = camera.get_config()
-    for item in json_val["property"]:
-        OK, prop = gp.gp_widget_get_child_by_name(config, json_val["property"])
-        if OK < gp.GP_OK:
-            prop.set_value(json_val["value"])
+    for item in json_val["properties"]:
+        try:
+            OK, prop = gp.gp_widget_get_child_by_name(config, item["name"])
+            if OK >= gp.GP_OK:
+                prop.set_value(item["value"])
+        except:
             pass
+            # passed = False
     camera.set_config(config)
     return True
-return False
-    
 
 if __name__ == "__main__":
     parse_args()
