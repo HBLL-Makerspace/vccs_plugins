@@ -1,0 +1,1 @@
+pyinstaller --onefile tether_download.py
